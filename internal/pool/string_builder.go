@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-var _ Builder = (*strings.Builder)(nil)
+var _ Buffer = (*strings.Builder)(nil)
 
 var globalPool = sync.Pool{
 	New: func() interface{} {
