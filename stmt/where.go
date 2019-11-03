@@ -88,78 +88,6 @@ func (c *Condition) Write(b Builder) error {
 	return c.Compare.WriteComparison(b)
 }
 
-type Comparisoner interface {
-	WriteComparison(b Builder) error
-}
-
-type CompOp struct {
-	Op    string
-	Value interface{}
-}
-
-func (c *CompOp) WriteComparison(b Builder) error {
-	b.WriteString(c.Op)
-	b.WriteString(" ?")
-	b.AppendArgs(c.Value)
-	return nil
-}
-
-type CompLike struct {
-	Negative bool
-	Value    interface{}
-}
-
-func (c *CompLike) WriteComparison(b Builder) error {
-	if c.Negative {
-		b.WriteString("NOT ")
-	}
-	b.WriteString("LIKE ?")
-	b.AppendArgs(c.Value)
-	return nil
-}
-
-type CompBetween struct {
-	Negative bool
-	Left     Expr
-	Right    Expr
-}
-
-func (c *CompBetween) WriteComparison(b Builder) error {
-	if c.Left == nil {
-		return errors.New("unset Left Expr in CompBetween")
-	}
-	if c.Right == nil {
-		return errors.New("unset Right Expr in CompBetween")
-	}
-	if c.Negative {
-		b.WriteString("NOT ")
-	}
-	b.WriteString("BETWEEN ")
-	if err := c.Left.Write(b); err != nil {
-		return err
-	}
-	b.WriteString(" AND ")
-	return c.Right.Write(b)
-}
-
-type CompIn struct {
-	Negative bool
-	Values   []interface{}
-}
-
-func (c *CompIn) WriteComparison(b Builder) error {
-	if c.Negative {
-		b.WriteString("NOT ")
-	}
-	b.WriteString("IN (")
-	if err := makePlaceholders(b, c.Values); err != nil {
-		return err
-	}
-	b.WriteString(")")
-	b.AppendArgs(c.Values...)
-	return nil
-}
-
 // Where "WHERE"
 type Where struct {
 	Expr Expr
@@ -177,7 +105,7 @@ func makePlaceholders(b Builder, args []interface{}) error {
 	const sep = ", "
 	switch len(args) {
 	case 0:
-		return errors.New("args is zero")
+		return errors.New("it should be passed at least more than 1")
 	case 1:
 		b.WriteString("?")
 		return nil
