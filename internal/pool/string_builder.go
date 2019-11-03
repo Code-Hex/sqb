@@ -11,6 +11,9 @@ var _ Buffer = (*strings.Builder)(nil)
 
 var globalPool = sync.Pool{
 	New: func() interface{} {
-		return new(strings.Builder)
+		return &Builder{
+			buf:  new(strings.Builder),
+			args: make([]interface{}, 0, 3),
+		}
 	},
 }

@@ -19,7 +19,7 @@ func (b *Builder) Args() []interface{} {
 
 // WriteString appends the contents of s to Buffer.
 func (b *Builder) WriteString(s string) {
-	b.WriteString(s)
+	b.buf.WriteString(s)
 }
 
 // AppendArgs appends the args.
