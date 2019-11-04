@@ -6,13 +6,6 @@ import (
 	"github.com/Code-Hex/sqb/internal/slice"
 )
 
-// Comparisoner implemented WriteComparison method.
-//
-// This interface represents a conditional expression.
-type Comparisoner interface {
-	WriteComparison(b Builder) error
-}
-
 var (
 	_ Comparisoner = (*CompOp)(nil)
 	_ Comparisoner = (*CompLike)(nil)

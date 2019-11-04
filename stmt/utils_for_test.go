@@ -26,3 +26,13 @@ type ExprMock struct {
 func (e *ExprMock) Write(b Builder) error {
 	return e.WriteMock(b)
 }
+
+var _ Comparisoner = (*ComparisonerMock)(nil)
+
+type ComparisonerMock struct {
+	WriteComparisonMock func(Builder) error
+}
+
+func (c *ComparisonerMock) WriteComparison(b Builder) error {
+	return c.WriteComparisonMock(b)
+}
