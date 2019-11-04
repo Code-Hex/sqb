@@ -68,7 +68,7 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - build:
+      - vet:
           context: *context
           requires:
             - mod
