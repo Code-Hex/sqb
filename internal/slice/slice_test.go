@@ -122,8 +122,8 @@ func TestFlatten(t *testing.T) {
 				"hello",
 				1234,
 				[][]int{
-					[]int{1, 2, 3},
-					[]int{5, 6, 7},
+					{1, 2, 3},
+					{5, 6, 7},
 				},
 				time.Date(2019, 11, 4, 0, 0, 0, 0, time.UTC),
 			},
@@ -141,8 +141,8 @@ func TestFlatten(t *testing.T) {
 				"hello",
 				1234,
 				[][]interface{}{
-					[]interface{}{"a", 1},
-					[]interface{}{"b", 2},
+					{"a", 1},
+					{"b", 2},
 				},
 				time.Date(2019, 11, 4, 0, 0, 0, 0, time.UTC),
 			},
@@ -158,7 +158,7 @@ func TestFlatten(t *testing.T) {
 			args: []interface{}{
 				interface{}(1),
 				[][]interface{}{
-					[]interface{}{
+					{
 						100,
 						[]interface{}{
 							"hello",
@@ -166,7 +166,7 @@ func TestFlatten(t *testing.T) {
 						},
 						200,
 					},
-					[]interface{}{"b", 2},
+					{"b", 2},
 				},
 				[2]int{1, 2},
 				time.Date(2019, 11, 4, 0, 0, 0, 0, time.UTC),

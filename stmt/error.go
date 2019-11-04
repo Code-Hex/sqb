@@ -3,7 +3,7 @@ package stmt
 var _ error = (*BuildError)(nil)
 
 // BuildError is the error type usually returned by functions in the stmt
-// package. It describes the current operation, occured of
+// package. It describes the current operation, occurred of
 // an error.
 type BuildError struct {
 	Op  string
