@@ -38,7 +38,9 @@ func Get() *Builder {
 	return globalPool.Get().(*Builder)
 }
 
-// Put saves used strings.Builder; avoids an allocation per invocation.
+const limit = 64 << 10
+
+// Put saves used Builder; avoids an allocation per invocation.
 func Put(b *Builder) {
 	// Proper usage of a sync.Pool requires each entry to have approximately
 	// the same memory cost. To obtain this property when the stored type
@@ -46,7 +48,7 @@ func Put(b *Builder) {
 	// to place back in the pool.
 	//
 	// See https://golang.org/issue/23199
-	if b.buf.Cap() > 64<<10 {
+	if b.buf.Cap() > limit {
 		return
 	}
 	b.Reset()
