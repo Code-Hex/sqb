@@ -18,6 +18,14 @@ func (b *Builder) Args() []interface{} {
 }
 
 // WriteString appends the contents of s to Buffer.
+// Builder.buf.WriteString doesn't have the potential to return
+// an error. But have the potential to panic.
+//
+// strings.Builder
+// https://golang.org/src/strings/builder.go?s=3425:3477#L110
+//
+// bytes.Buffer
+// https://golang.org/pkg/bytes/#Buffer.WriteString
 func (b *Builder) WriteString(s string) {
 	b.buf.WriteString(s)
 }
