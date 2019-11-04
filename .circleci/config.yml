@@ -1,0 +1,57 @@
+version: 2
+
+variables:
+  go: &go circleci/golang:1.13.4
+  context: &context org-context
+  working_directory: &working_directory /go/src/github.com/Code-Hex/sqb
+common_steps:
+  restore_cache_modules: &restore_cache_modules
+    keys:
+      - go-mod-v1-{{ checksum "go.sum" }}
+
+jobs:
+  mod:
+    docker:
+      - image: *go
+        environment:
+          GOFLAGS: -mod=vendor
+    working_directory: *working_directory
+    steps:
+      - checkout
+      - restore_cache: *restore_cache_modules
+      - run:
+          name: Install dependencies
+          command: |
+            go mod vendor
+      
+      - save_cache:
+          key: go-mod-v1-{{ checksum "go.sum" }}
+          paths:
+            - "./vendor"
+
+  vet:
+    docker:
+      - image: *go
+        environment:
+          GOFLAGS: -mod=vendor
+    working_directory: *working_directory
+    steps:
+      - checkout
+      - restore_cache: *restore_cache_modules
+      - run:
+          name: vet
+          command: go vet ./...
+
+  test:
+    docker:
+      - image: *go
+        environment:
+          GOFLAGS: -mod=vendor
+    working_directory: *working_directory
+    steps:
+      - checkout
+      - restore_cache: *restore_cache_modules
+      - run:
+          name: Build
+          command: go test ./...
+ 
