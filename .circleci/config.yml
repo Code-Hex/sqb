@@ -53,5 +53,33 @@ jobs:
       - restore_cache: *restore_cache_modules
       - run:
           name: Build
-          command: go test ./...
+          command: go test -race -coverpkg=./... -coverprofile=coverage.txt ./...
+      - run:
+          name: Upload coverages to codecov
+          command: |
+            bash <(curl -s https://codecov.io/bash)
+
+workflows:
+  version: 2
+  test-workflow:
+    jobs:
+      - mod:
+          context: *context
+          filters:
+            tags:
+              only: /.*/
+      - build:
+          context: *context
+          requires:
+            - mod
+          filters:
+            tags:
+              only: /.*/
+      - test:
+          context: *context
+          requires:
+            - mod
+          filters:
+            tags:
+              only: /.*/
  
