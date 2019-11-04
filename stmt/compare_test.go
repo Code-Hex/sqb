@@ -182,6 +182,28 @@ func TestCompIn_WriteComparison(t *testing.T) {
 			wantErr:  false,
 		},
 		{
+			name: "valid nested list",
+			c: &CompIn{
+				Negative: false,
+				Values: []interface{}{
+					[]int{1, 2},
+					[]interface{}{
+						100,
+						[]interface{}{"hello", []byte("world")},
+						500,
+					},
+				},
+			},
+			want: "IN (?, ?, ?, ?, ?, ?)",
+			wantArgs: []interface{}{
+				1, 2,
+				100,
+				"hello", []byte("world"),
+				500,
+			},
+			wantErr: false,
+		},
+		{
 			name: "valid NOT IN",
 			c: &CompIn{
 				Negative: true,
@@ -218,6 +240,61 @@ func TestCompIn_WriteComparison(t *testing.T) {
 				if diff := cmp.Diff(tt.wantArgs, b.Args); diff != "" {
 					t.Errorf("args (-want, +got)\n%s", diff)
 				}
+			}
+		})
+	}
+}
+
+func Test_makePlaceholders(t *testing.T) {
+	makeArgs := func(i int) []interface{} {
+		ret := make([]interface{}, i)
+		for idx := range ret {
+			ret[idx] = 0
+		}
+		return ret
+	}
+	tests := []struct {
+		name    string
+		args    int
+		want    string
+		wantErr bool
+	}{
+		{
+			name:    "invalid 0 arguments",
+			args:    0,
+			wantErr: true,
+		},
+		{
+			name:    "valid 1 arguments",
+			args:    1,
+			want:    "?",
+			wantErr: false,
+		},
+		{
+			name:    "valid 2 arguments",
+			args:    2,
+			want:    "?, ?",
+			wantErr: false,
+		},
+		{
+			name:    "valid 5 arguments",
+			args:    5,
+			want:    "?, ?, ?, ?, ?",
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := &BuildCapture{
+				buf:  strings.Builder{},
+				Args: []interface{}{},
+			}
+			args := makeArgs(tt.args)
+			if err := makePlaceholders(b, args); (err != nil) != tt.wantErr {
+				t.Errorf("makePlaceholders() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if got := b.buf.String(); tt.want != got {
+				t.Errorf("\nwant: %q\ngot: %q", tt.want, got)
 			}
 		})
 	}

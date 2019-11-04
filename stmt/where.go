@@ -30,9 +30,6 @@ func (c *Conjection) Write(b Builder) error {
 	if c.Left == nil {
 		return errors.New("unset Left Expr in Conjection")
 	}
-	if c.Right == nil {
-		return errors.New("unset Right Expr in Conjection")
-	}
 	if _, ok := c.Left.(*Conjection); ok {
 		b.WriteString("(")
 		if err := c.Left.Write(b); err != nil {
@@ -51,6 +48,10 @@ func (c *Conjection) Write(b Builder) error {
 	b.WriteString(" ")
 	b.WriteString(c.Combined)
 	b.WriteString(" ")
+
+	if c.Right == nil {
+		return errors.New("unset Right Expr in Conjection")
+	}
 
 	if _, ok := c.Right.(*Conjection); ok {
 		b.WriteString("(")
@@ -99,22 +100,4 @@ func (w *Where) Write(b Builder) error {
 		return errors.New("unset Expr in where clause")
 	}
 	return w.Expr.Write(b)
-}
-
-func makePlaceholders(b Builder, args []interface{}) error {
-	const sep = ", "
-	switch len(args) {
-	case 0:
-		return errors.New("it should be passed at least more than 1")
-	case 1:
-		b.WriteString("?")
-		return nil
-	}
-
-	b.WriteString("?")
-	for range args[1:] {
-		b.WriteString(sep)
-		b.WriteString("?")
-	}
-	return nil
 }

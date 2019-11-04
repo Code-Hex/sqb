@@ -1,6 +1,10 @@
 package stmt
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/Code-Hex/sqb/internal/slice"
+)
 
 // Comparisoner implemented WriteComparison method.
 //
@@ -94,10 +98,29 @@ func (c *CompIn) WriteComparison(b Builder) error {
 		b.WriteString("NOT ")
 	}
 	b.WriteString("IN (")
-	if err := makePlaceholders(b, c.Values); err != nil {
+	args := slice.Flatten(c.Values)
+	if err := makePlaceholders(b, args); err != nil {
 		return err
 	}
 	b.WriteString(")")
-	b.AppendArgs(c.Values...)
+	b.AppendArgs(args...)
+	return nil
+}
+
+func makePlaceholders(b Builder, args []interface{}) error {
+	const sep = ", "
+	switch len(args) {
+	case 0:
+		return errors.New("it should be passed at least more than 1")
+	case 1:
+		b.WriteString("?")
+		return nil
+	}
+
+	b.WriteString("?")
+	for range args[1:] {
+		b.WriteString(sep)
+		b.WriteString("?")
+	}
 	return nil
 }
