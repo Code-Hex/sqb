@@ -6,6 +6,13 @@ import (
 	"github.com/Code-Hex/sqb/stmt"
 )
 
+// Paren creates the expression with parentheses.
+func Paren(expr stmt.Expr) *stmt.Paren {
+	return &stmt.Paren{
+		Expr: expr,
+	}
+}
+
 // And creates statement for the AND boolean expression.
 // If you want to know more details, See at stmt.And.
 func And(left, right stmt.Expr, exprs ...stmt.Expr) *stmt.And {

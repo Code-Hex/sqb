@@ -280,3 +280,46 @@ func TestOrByMap_nil_panic(t *testing.T) {
 	}()
 	sqb.OrFromMap(nil, map[string]interface{}{})
 }
+
+func TestParen(t *testing.T) {
+	tests := []struct {
+		name     string
+		args     stmt.Expr
+		want     string
+		wantArgs []interface{}
+	}{
+		{
+			name:     "valid",
+			args:     sqb.Eq("col", true),
+			want:     "(col = ?)",
+			wantArgs: []interface{}{true},
+		},
+		{
+			name: "valid AND",
+			args: sqb.And(
+				sqb.Eq("col", true),
+				sqb.Ne("col2", 10),
+			),
+			want:     "(col = ? AND col2 != ?)",
+			wantArgs: []interface{}{true, 10},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := &BuildCapture{
+				buf:  strings.Builder{},
+				Args: []interface{}{},
+			}
+			expr := sqb.Paren(tt.args)
+			if err := expr.Write(b); err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if got := b.buf.String(); tt.want != got {
+				t.Errorf("\nwant: %q\ngot: %q", tt.want, got)
+			}
+			if diff := cmp.Diff(tt.wantArgs, b.Args); diff != "" {
+				t.Errorf("args (-want, +got)\n%s", diff)
+			}
+		})
+	}
+}
