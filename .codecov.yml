@@ -1,0 +1,13 @@
+codecov:
+  # At CircleCi, the PR is merged into `master` before the testsuite is run.
+  # This allows CodeCov to adjust the resulting coverage diff, s.t. it matches
+  # with the GitHub diff.
+  # https://github.com/codecov/support/issues/363
+  # https://docs.codecov.io/docs/comparing-commits
+  allow_coverage_offsets: true
+ignore:
+  - "internal/pool"
+coverage:
+  precision: 2
+  round: down
+  range: "90...95"

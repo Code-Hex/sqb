@@ -52,7 +52,7 @@ jobs:
       - checkout
       - restore_cache: *restore_cache_modules
       - run:
-          name: Build
+          name: Test
           command: go test -race -coverpkg=./... -coverprofile=coverage.txt ./...
       - run:
           name: Upload coverages to codecov
