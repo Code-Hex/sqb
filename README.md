@@ -1,4 +1,4 @@
-# SQL Query Builder
+# sqb - SQL Query Builder
 
 > ⚡ Blazing fast, Flexible, SQL Query Builder for Go
 
