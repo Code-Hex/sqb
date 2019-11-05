@@ -5,15 +5,28 @@ import (
 	"strconv"
 )
 
-// Table represents "FROM <table>", "INTO <table>", "UPDATE <table>".
-type Table string
+// String is able to replace bindvars with string.
+//
+// i.e. "SELECT * FROM ?" => "SELECT * FROM string"
+type String string
 
-// Write writes the table name that the From has.
-func (f Table) Write(b Builder) error {
-	if f == "" {
-		return errors.New("unspecified table")
+// Write writes the string.
+func (s String) Write(b Builder) error {
+	if s == "" {
+		return errors.New("unspecified string")
 	}
-	b.WriteString(string(f))
+	b.WriteString(string(s))
+	return nil
+}
+
+// Numeric is able to replace bindvars with numeric.
+//
+// i.e. "LIMIT ?" => "LIMIT numeric"
+type Numeric int64
+
+// Write writes the numeric.
+func (n Numeric) Write(b Builder) error {
+	b.WriteString(strconv.FormatInt(int64(n), 10))
 	return nil
 }
 
@@ -23,8 +36,7 @@ type Limit int64
 // Write writes the number of limitations that the Limit has.
 func (l Limit) Write(b Builder) error {
 	b.WriteString("LIMIT ")
-	b.WriteString(strconv.FormatInt(int64(l), 10))
-	return nil
+	return Numeric(l).Write(b)
 }
 
 // Offset represents "OFFSET <offset_num>".
@@ -33,8 +45,7 @@ type Offset int64
 // Write writes the number of offsets that the Offset has.
 func (o Offset) Write(b Builder) error {
 	b.WriteString("OFFSET ")
-	b.WriteString(strconv.FormatInt(int64(o), 10))
-	return nil
+	return Numeric(o).Write(b)
 }
 
 // OrderBy represents "<column_name>", "<column_name> DESC".

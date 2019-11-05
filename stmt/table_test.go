@@ -5,22 +5,22 @@ import (
 	"testing"
 )
 
-func TestTable_Write(t *testing.T) {
+func TestString_Write(t *testing.T) {
 	tests := []struct {
 		name    string
-		t       Table
+		s       String
 		want    string
 		wantErr bool
 	}{
 		{
 			name:    "valid",
-			t:       Table("table"),
+			s:       String("table"),
 			want:    "table",
 			wantErr: false,
 		},
 		{
 			name:    "invalid",
-			t:       "",
+			s:       String(""),
 			want:    "",
 			wantErr: true,
 		},
@@ -31,8 +31,46 @@ func TestTable_Write(t *testing.T) {
 				buf:  strings.Builder{},
 				Args: []interface{}{},
 			}
-			if err := tt.t.Write(b); (err != nil) != tt.wantErr {
-				t.Errorf("Table.Write() error = %v, wantErr %v", err, tt.wantErr)
+			err := tt.s.Write(b)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("String.Write() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if !tt.wantErr {
+				if got := b.buf.String(); tt.want != got {
+					t.Errorf("\nwant: %q\ngot: %q", tt.want, got)
+				}
+			}
+		})
+	}
+}
+
+func TestNumeric_Write(t *testing.T) {
+	tests := []struct {
+		name    string
+		n       Numeric
+		want    string
+		wantErr bool
+	}{
+		{
+			name: "valid",
+			n:    Numeric(100),
+			want: "100",
+		},
+		{
+			name: "valid zero",
+			n:    Numeric(0),
+			want: "0",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := &BuildCapture{
+				buf:  strings.Builder{},
+				Args: []interface{}{},
+			}
+			err := tt.n.Write(b)
+			if err != nil {
+				t.Fatalf("String.Write() unexpected error: %v", err)
 			}
 			if !tt.wantErr {
 				if got := b.buf.String(); tt.want != got {

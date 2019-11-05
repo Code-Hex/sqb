@@ -47,22 +47,22 @@ func TestColumns(t *testing.T) {
 	}
 }
 
-func TestTable(t *testing.T) {
+func TestString(t *testing.T) {
 	tests := []struct {
 		name    string
-		t       sqb.Table
+		s       sqb.String
 		want    string
 		wantErr bool
 	}{
 		{
 			name:    "valid",
-			t:       sqb.Table("hello"),
+			s:       sqb.String("hello"),
 			want:    "SELECT * FROM hello",
 			wantErr: false,
 		},
 		{
 			name:    "invalid",
-			t:       sqb.Table(""),
+			s:       sqb.String(""),
 			want:    "",
 			wantErr: true,
 		},
@@ -70,10 +70,42 @@ func TestTable(t *testing.T) {
 	const sqlstr = "SELECT * FROM ?"
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			builder := sqb.New(sqlstr).Bind(tt.t)
+			builder := sqb.New(sqlstr).Bind(tt.s)
 			got, _, err := builder.Build()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("From error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("String error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if tt.want != got {
+				t.Errorf("\nwant: %q\ngot: %q", tt.want, got)
+			}
+		})
+	}
+}
+
+func TestNumeric(t *testing.T) {
+	tests := []struct {
+		name string
+		n    sqb.Numeric
+		want string
+	}{
+		{
+			name: "valid",
+			n:    sqb.Numeric(10),
+			want: "SELECT * FROM hello LIMIT 10",
+		},
+		{
+			name: "valid zero",
+			n:    sqb.Numeric(0),
+			want: "SELECT * FROM hello LIMIT 0",
+		},
+	}
+	const sqlstr = "SELECT * FROM hello LIMIT ?"
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			builder := sqb.New(sqlstr).Bind(tt.n)
+			got, _, err := builder.Build()
+			if err != nil {
+				t.Errorf("unexpected error = %v", err)
 			}
 			if tt.want != got {
 				t.Errorf("\nwant: %q\ngot: %q", tt.want, got)
