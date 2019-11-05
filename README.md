@@ -16,7 +16,9 @@ query, args, err := builder.Build()
 // args  => []interface{}{1}
 ```
 
-When you want to use build cache
+<details>
+<summary>When you want to use build cache</summary>
+
 
 ```go
 const sqlstr = "SELECT * FROM tables WHERE ? AND ?"
@@ -29,8 +31,11 @@ for _, col := range columns {
     // args  => []interface{}{1, "value"}
 }
 ```
+</details>
 
-Error case
+<details>
+<summary>Error case</summary>
+
 
 ```go
 const sqlstr = "SELECT * FROM tables WHERE ? OR ?"
@@ -40,6 +45,7 @@ query, args, err  := builder.Build()
 // args  => nil
 // err   => "number of bindVars exceeds replaceable statements"
 ```
+</details>
 
 ## Install
 
