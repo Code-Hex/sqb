@@ -36,3 +36,24 @@ func (o Offset) Write(b Builder) error {
 	b.WriteString(strconv.FormatInt(int64(o), 10))
 	return nil
 }
+
+// OrderBy represents "<column_name>", "<column_name> DESC".
+// If there is Next, it represents like "<column_name>, <column_name> DESC".
+type OrderBy struct {
+	Column string
+	Desc   bool
+	Next   *OrderBy
+}
+
+// Write writes expression for "ORDER BY".
+func (o *OrderBy) Write(b Builder) error {
+	b.WriteString(o.Column)
+	if o.Desc {
+		b.WriteString(" DESC")
+	}
+	if o.Next != nil {
+		b.WriteString(", ")
+		return o.Next.Write(b)
+	}
+	return nil
+}
