@@ -52,7 +52,7 @@ func TestLimit_Write(t *testing.T) {
 		{
 			name: "valid",
 			l:    Limit(10),
-			want: "10",
+			want: "LIMIT 10",
 		},
 	}
 	for _, tt := range tests {
@@ -62,6 +62,34 @@ func TestLimit_Write(t *testing.T) {
 				Args: []interface{}{},
 			}
 			if err := tt.l.Write(b); err != nil {
+				t.Fatalf("From.Write() unexpected error: %v", err)
+			}
+			if got := b.buf.String(); tt.want != got {
+				t.Errorf("\nwant: %q\ngot: %q", tt.want, got)
+			}
+		})
+	}
+}
+
+func TestOffset_Write(t *testing.T) {
+	tests := []struct {
+		name string
+		o    Offset
+		want string
+	}{
+		{
+			name: "valid",
+			o:    Offset(10),
+			want: "OFFSET 10",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := &BuildCapture{
+				buf:  strings.Builder{},
+				Args: []interface{}{},
+			}
+			if err := tt.o.Write(b); err != nil {
 				t.Fatalf("From.Write() unexpected error: %v", err)
 			}
 			if got := b.buf.String(); tt.want != got {

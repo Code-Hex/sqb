@@ -102,10 +102,45 @@ func TestLimit(t *testing.T) {
 			wantErr: false,
 		},
 	}
-	const sqlstr = "SELECT * FROM table LIMIT ?"
+	const sqlstr = "SELECT * FROM table ?"
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			builder := sqb.New(sqlstr).Bind(tt.l)
+			got, _, err := builder.Build()
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if tt.want != got {
+				t.Errorf("\nwant: %q\ngot: %q", tt.want, got)
+			}
+		})
+	}
+}
+
+func TestOffset(t *testing.T) {
+	tests := []struct {
+		name    string
+		o       sqb.Offset
+		want    string
+		wantErr bool
+	}{
+		{
+			name:    "valid",
+			o:       sqb.Offset(100),
+			want:    "SELECT * FROM table LIMIT 1 OFFSET 100",
+			wantErr: false,
+		},
+		{
+			name:    "valid 0",
+			o:       sqb.Offset(0),
+			want:    "SELECT * FROM table LIMIT 1 OFFSET 0",
+			wantErr: false,
+		},
+	}
+	const sqlstr = "SELECT * FROM table LIMIT 1 ?"
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			builder := sqb.New(sqlstr).Bind(tt.o)
 			got, _, err := builder.Build()
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)

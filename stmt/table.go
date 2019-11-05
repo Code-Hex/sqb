@@ -22,6 +22,17 @@ type Limit int64
 
 // Write writes the number of limitations that the Limit has.
 func (l Limit) Write(b Builder) error {
+	b.WriteString("LIMIT ")
 	b.WriteString(strconv.FormatInt(int64(l), 10))
+	return nil
+}
+
+// Offset represents "OFFSET <offset_num>".
+type Offset int64
+
+// Write writes the number of offsets that the Offset has.
+func (o Offset) Write(b Builder) error {
+	b.WriteString("OFFSET ")
+	b.WriteString(strconv.FormatInt(int64(o), 10))
 	return nil
 }

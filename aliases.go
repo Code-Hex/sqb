@@ -11,4 +11,6 @@ type (
 	Table = stmt.Table
 	// Limit is an alias of stmt.Limit.
 	Limit = stmt.Limit
+	// Offset is an alias of stmt.Offset.
+	Offset = stmt.Offset
 )
