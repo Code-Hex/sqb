@@ -1,10 +1,37 @@
 package pool
 
+import "strconv"
+
+// These variables are the same as defined variables at sqb.go.
+const (
+	// Question represents a '?' placeholder parameter.
+	Question = iota
+	// Dollar represents a '$1', '$2'... placeholder parameters.
+	Dollar
+)
+
 // Builder is the interface that wraps the basic
 // Reset, Cap and WriteString method.
 type Builder struct {
-	buf  Buffer
-	args []interface{}
+	Placeholder int
+
+	buf     Buffer
+	args    []interface{}
+	counter int
+}
+
+// WritePlaceholder writes placeholder.
+func (b *Builder) WritePlaceholder() {
+	switch b.Placeholder {
+	case Dollar:
+		b.counter++
+		b.buf.WriteString("$")
+		b.buf.WriteString(strconv.Itoa(b.counter))
+	case Question:
+		fallthrough
+	default:
+		b.buf.WriteString("?")
+	}
 }
 
 // String returns appended the contents.
@@ -39,6 +66,7 @@ func (b *Builder) AppendArgs(args ...interface{}) {
 func (b *Builder) Reset() {
 	b.buf.Reset()
 	b.args = b.args[:0]
+	b.counter = 0
 }
 
 // Get allocates a new strings.Builder or grabs a cached one.
