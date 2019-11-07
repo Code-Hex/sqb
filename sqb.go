@@ -8,6 +8,7 @@ import (
 	"github.com/Code-Hex/sqb/stmt"
 )
 
+// There is build logic using placeholder in internal/pool.go.
 const (
 	// Question represents a '?' placeholder parameter.
 	Question = iota
