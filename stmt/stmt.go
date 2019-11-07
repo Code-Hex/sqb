@@ -5,6 +5,7 @@ package stmt
 // WriteString method uses the passed string is writing to the query builder.
 // AppendArgs method uses for pass arguments corresponding to variables.
 type Builder interface {
+	WritePlaceholder()
 	WriteString(string)
 	AppendArgs(args ...interface{})
 }

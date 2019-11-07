@@ -35,8 +35,8 @@ func TestColumns(t *testing.T) {
 	const sqlstr = "SELECT ? FROM table"
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			builder := sqb.New(sqlstr).Bind(tt.c)
-			got, _, err := builder.Build()
+			builder := sqb.New().Bind(tt.c)
+			got, _, err := builder.Build(sqlstr)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Columns error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -70,8 +70,8 @@ func TestString(t *testing.T) {
 	const sqlstr = "SELECT * FROM ?"
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			builder := sqb.New(sqlstr).Bind(tt.s)
-			got, _, err := builder.Build()
+			builder := sqb.New().Bind(tt.s)
+			got, _, err := builder.Build(sqlstr)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("String error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -102,8 +102,8 @@ func TestNumeric(t *testing.T) {
 	const sqlstr = "SELECT * FROM hello LIMIT ?"
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			builder := sqb.New(sqlstr).Bind(tt.n)
-			got, _, err := builder.Build()
+			builder := sqb.New().Bind(tt.n)
+			got, _, err := builder.Build(sqlstr)
 			if err != nil {
 				t.Errorf("unexpected error = %v", err)
 			}
@@ -137,8 +137,8 @@ func TestLimit(t *testing.T) {
 	const sqlstr = "SELECT * FROM table ?"
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			builder := sqb.New(sqlstr).Bind(tt.l)
-			got, _, err := builder.Build()
+			builder := sqb.New().Bind(tt.l)
+			got, _, err := builder.Build(sqlstr)
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
@@ -172,8 +172,8 @@ func TestOffset(t *testing.T) {
 	const sqlstr = "SELECT * FROM table LIMIT 1 ?"
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			builder := sqb.New(sqlstr).Bind(tt.o)
-			got, _, err := builder.Build()
+			builder := sqb.New().Bind(tt.o)
+			got, _, err := builder.Build(sqlstr)
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}

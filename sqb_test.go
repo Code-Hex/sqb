@@ -13,6 +13,7 @@ func TestBuilder_Build(t *testing.T) {
 	tests := []struct {
 		name     string
 		sql      string
+		options  []sqb.Option
 		stmts    []stmt.Expr
 		want     string
 		wantArgs []interface{}
@@ -71,6 +72,30 @@ func TestBuilder_Build(t *testing.T) {
 			wantErr:  false,
 		},
 		{
+			name: "valid conject twice with postgresql",
+			sql:  "SELECT * FROM tables WHERE ?",
+			options: []sqb.Option{
+				sqb.SetPlaceholder(sqb.Dollar),
+			},
+			stmts: []stmt.Expr{
+				sqb.And(
+					sqb.Or(
+						sqb.Eq("category", 1),
+						sqb.Eq("category", 2),
+					),
+					sqb.Or(
+						sqb.NotIn("brand", []string{
+							"apple", "sony", "google",
+						}),
+						sqb.NotLike("name", "abc%"),
+					),
+				),
+			},
+			want:     "SELECT * FROM tables WHERE (category = $1 OR category = $2) AND (brand NOT IN ($3, $4, $5) OR name NOT LIKE $6)",
+			wantArgs: []interface{}{1, 2, "apple", "sony", "google", "abc%"},
+			wantErr:  false,
+		},
+		{
 			name:     "invalid bindVars exceeds replaceable statements",
 			sql:      "SELECT * FROM tables WHERE ?",
 			stmts:    []stmt.Expr{},
@@ -95,11 +120,11 @@ func TestBuilder_Build(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b := sqb.New(tt.sql)
+			b := sqb.New(tt.options...)
 			for _, expr := range tt.stmts {
 				b = b.Bind(expr)
 			}
-			got, args, err := b.Build()
+			got, args, err := b.Build(tt.sql)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Builder.Build() error = %v, wantErr %v", err, tt.wantErr)
 				return

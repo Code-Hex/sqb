@@ -25,7 +25,8 @@ type CompOp struct {
 // WriteComparison implemented Comparisoner interface.
 func (c *CompOp) WriteComparison(b Builder) error {
 	b.WriteString(c.Op)
-	b.WriteString(" ?")
+	b.WriteString(" ")
+	b.WritePlaceholder()
 	b.AppendArgs(c.Value)
 	return nil
 }
@@ -44,7 +45,8 @@ func (c *CompLike) WriteComparison(b Builder) error {
 	if c.Negative {
 		b.WriteString("NOT ")
 	}
-	b.WriteString("LIKE ?")
+	b.WriteString("LIKE ")
+	b.WritePlaceholder()
 	b.AppendArgs(c.Value)
 	return nil
 }
@@ -70,7 +72,10 @@ func (c *CompBetween) WriteComparison(b Builder) error {
 	if c.Negative {
 		b.WriteString("NOT ")
 	}
-	b.WriteString("BETWEEN ? AND ?")
+	b.WriteString("BETWEEN ")
+	b.WritePlaceholder()
+	b.WriteString(" AND ")
+	b.WritePlaceholder()
 	b.AppendArgs(c.Left, c.Right)
 	return nil
 }
@@ -106,14 +111,14 @@ func makePlaceholders(b Builder, args []interface{}) error {
 	case 0:
 		return errors.New("it should be passed at least more than 1")
 	case 1:
-		b.WriteString("?")
+		b.WritePlaceholder()
 		return nil
 	}
 
-	b.WriteString("?")
+	b.WritePlaceholder()
 	for range args[1:] {
 		b.WriteString(sep)
-		b.WriteString("?")
+		b.WritePlaceholder()
 	}
 	return nil
 }

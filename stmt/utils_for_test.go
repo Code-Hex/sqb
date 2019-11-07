@@ -9,6 +9,10 @@ type BuildCapture struct {
 	Args []interface{}
 }
 
+func (b *BuildCapture) WritePlaceholder() {
+	b.buf.WriteString("?")
+}
+
 func (b *BuildCapture) WriteString(s string) {
 	b.buf.WriteString(s)
 }
