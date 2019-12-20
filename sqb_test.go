@@ -96,6 +96,30 @@ func TestBuilder_Build(t *testing.T) {
 			wantErr:  false,
 		},
 		{
+			name: "valid conject twice with spanner",
+			sql:  "SELECT * FROM tables WHERE ?",
+			options: []sqb.Option{
+				sqb.SetPlaceholder(sqb.AtMark),
+			},
+			stmts: []stmt.Expr{
+				sqb.And(
+					sqb.Or(
+						sqb.Eq("category", 1),
+						sqb.Eq("category", 2),
+					),
+					sqb.Or(
+						sqb.NotIn("brand", []string{
+							"apple", "sony", "google",
+						}),
+						sqb.NotLike("name", "abc%"),
+					),
+				),
+			},
+			want:     "SELECT * FROM tables WHERE (category = @1 OR category = @2) AND (brand NOT IN (@3, @4, @5) OR name NOT LIKE @6)",
+			wantArgs: []interface{}{1, 2, "apple", "sony", "google", "abc%"},
+			wantErr:  false,
+		},
+		{
 			name:     "invalid bindVars exceeds replaceable statements",
 			sql:      "SELECT * FROM tables WHERE ?",
 			stmts:    []stmt.Expr{},
