@@ -8,6 +8,8 @@ const (
 	Question = iota
 	// Dollar represents a '$1', '$2'... placeholder parameters.
 	Dollar
+	// AtMark represents a '@1', '@2'... placeholder parameters.
+	AtMark
 )
 
 // Builder is the interface that wraps the basic
@@ -23,6 +25,10 @@ type Builder struct {
 // WritePlaceholder writes placeholder.
 func (b *Builder) WritePlaceholder() {
 	switch b.Placeholder {
+	case AtMark:
+		b.counter++
+		b.buf.WriteString("@")
+		b.buf.WriteString(strconv.Itoa(b.counter))
 	case Dollar:
 		b.counter++
 		b.buf.WriteString("$")

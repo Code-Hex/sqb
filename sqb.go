@@ -14,6 +14,8 @@ const (
 	Question = iota
 	// Dollar represents a '$1', '$2'... placeholder parameters.
 	Dollar
+	// AtMark represents a '@1', '@2'... placeholder parameters.
+	AtMark
 )
 
 // Option represents options to build sql query.
