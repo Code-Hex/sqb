@@ -11,7 +11,7 @@ import (
 func BenchmarkSqbAndFromMap(b *testing.B) {
 	const want = "SELECT * FROM users WHERE (col1 = ? AND col2 = ? AND col3 = ?)"
 	for i := 0; i < b.N; i++ {
-		builder := sqb.New("SELECT * FROM users WHERE ?")
+		builder := sqb.New()
 		sql, _, err := builder.Bind(
 			sqb.Paren(
 				sqb.AndFromMap(sqb.Eq, map[string]interface{}{
@@ -20,7 +20,7 @@ func BenchmarkSqbAndFromMap(b *testing.B) {
 					"col3": true,
 				}),
 			),
-		).Build()
+		).Build("SELECT * FROM users WHERE ?")
 		if err != nil {
 			b.Fatal(err)
 		}
@@ -33,7 +33,7 @@ func BenchmarkSqbAndFromMap(b *testing.B) {
 func BenchmarkSqbAnd(b *testing.B) {
 	const want = "SELECT * FROM users WHERE (col1 = ? AND col2 = ? AND col3 = ?)"
 	for i := 0; i < b.N; i++ {
-		builder := sqb.New("SELECT * FROM users WHERE ?")
+		builder := sqb.New()
 		sql, _, err := builder.Bind(
 			sqb.Paren(
 				sqb.And(
@@ -42,7 +42,7 @@ func BenchmarkSqbAnd(b *testing.B) {
 					sqb.Eq("col3", true),
 				),
 			),
-		).Build()
+		).Build("SELECT * FROM users WHERE ?")
 		if err != nil {
 			b.Fatal(err)
 		}

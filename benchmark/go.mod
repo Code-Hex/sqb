@@ -3,7 +3,7 @@ module github.com/Code-Hex/sqb/benchmark
 go 1.13
 
 require (
-	github.com/Code-Hex/sqb v0.0.1
+	github.com/Code-Hex/sqb v0.0.2
 	github.com/Masterminds/squirrel v1.1.0
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/huandu/go-sqlbuilder v1.5.1
