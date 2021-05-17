@@ -70,9 +70,18 @@ func (b *Builder) AppendArgs(args ...interface{}) {
 
 // Reset resets Builder.
 func (b *Builder) Reset() {
-	b.buf.Reset()
-	b.args = b.args[:0]
+	b.args = []interface{}{}
 	b.counter = 0
+	// Proper usage of a sync.Pool requires each entry to have approximately
+	// the same memory cost. To obtain this property when the stored type
+	// contains a variably-sized buffer, we add a hard limit on the maximum buffer
+	// to place back in the pool.
+	//
+	// See https://golang.org/issue/23199
+	if b.buf.Cap() > limit {
+		return
+	}
+	b.buf.Reset()
 }
 
 // Get allocates a new strings.Builder or grabs a cached one.
@@ -84,15 +93,6 @@ const limit = 64 << 10
 
 // Put saves used Builder; avoids an allocation per invocation.
 func Put(b *Builder) {
-	// Proper usage of a sync.Pool requires each entry to have approximately
-	// the same memory cost. To obtain this property when the stored type
-	// contains a variably-sized buffer, we add a hard limit on the maximum buffer
-	// to place back in the pool.
-	//
-	// See https://golang.org/issue/23199
-	if b.buf.Cap() > limit {
-		return
-	}
 	b.Reset()
 	globalPool.Put(b)
 }
